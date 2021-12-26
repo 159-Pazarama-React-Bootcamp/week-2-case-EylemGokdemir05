@@ -10,10 +10,9 @@ var todos=[];
 
 // submit event
 todoForm.addEventListener('submit', function(event) {
-    window.console.log('event ',event)
     event.preventDefault();
     addTodo(todoInput.value); // call addTodo function for current value
-    renderTodos(event.target[0].value);
+    renderTodos(todos[todos.length-1].title); 
 });
 
 getAllTodos().then(todos => {
@@ -25,17 +24,21 @@ function getAllTodos() {
         .then((response) => response.json())
         .then(function(todos){
             todos.forEach((todo)=>{
-                console.log('todo: ',todo.title);
+                //console.log('todo: ',todo.title);
             })
         });
 }
 
+var todos=[];
+
+// add Todo function
 function addTodo(item){
-    let todos = {
+    let todo = {
         id:Date.now(),
         title:item,
         completeStatus:false
     }
+    todos.push(todo);
     fetch(apiUrl,{
         method: "POST",
         body: JSON.stringify(todos),
@@ -48,69 +51,16 @@ function addTodo(item){
     console.log('addtodoitem ',item)
 }
 
-// add Todo function
-// function addTodo(item){
-//     if(item!==''){
-//         const todo={
-//             id:Date.now(),
-//             title:item,
-//             completeStatus:false
-//         }
-//         todos.push(todo);
-//         addToLocalStorage(todos);
-//         todoInput.value='';
-//     }
-// }
-
 function renderTodos(todos){
-    todoItemsList.innerHTML = '';
 
-    window.console.log('todos ',todos)
-
-    // const checked=item.completeStatus ? 'checked' : null;
-    // const listItem=document.createElement('li');
-    // listItem.setAttribute('class','item');
-    // listItem.setAttribute('data-key', item.id);
-    // if(item.completeStatus===true){
-    //     listItem.classList.add('checked');
-    // }
     const listItem=document.createElement('li');
     listItem.setAttribute('class','todos');
-    window.console.log('listItem ',listItem)
-    listItem.innerHTML=`
+    listItem.innerHTML+=`
     <span class="todo-input">${todos}</span>
+    <button class="delete-btn">Sil</button>
     `
     todoItemsList.append(listItem);
-    // todos.forEach(function(item) {
-    //     window.console.log('item ',item)
-    //     const checked=item.completeStatus ? 'checked' : null;
-    //     const listItem=document.createElement('li');
-    //     listItem.setAttribute('class','item');
-    //     listItem.setAttribute('data-key', item.id);
-    //     if(item.completeStatus===true){
-    //         listItem.classList.add('checked');
-    //     }
-    //     listItem.innerHTML=`
-    //         <input type="checkbox" class="checkbox" ${checked}>
-    //         ${item.title}
-    //         <button class="delete-btn">Sil</button>
-    //     `
-    //     todoItemsList.append(listItem);
-    // });
 }
-
-// const addToLocalStorage = (todos) => {
-//     localStorage.setItem('todos', JSON.stringify(todos));
-//     renderTodos(todos);
-// }
-
-// const getFromLocalStorage = () => {
-//     const reference = localStorage.getItem('todos');
-//     if (reference) {
-//         todos = JSON.parse(reference);
-//         renderTodos(todos);
-//     }
-// }
 
 // for completed status
 function toggle(id){
@@ -127,10 +77,7 @@ function deleteTodo(id){
     todos=todos.filter(function(item) {
         return item.id != id;
     })
-    // addToLocalStorage(todos);
 }
-
-// getFromLocalStorage();
 
 todoItemsList.addEventListener('click', function(event) {
     if(event.target.type==='checkbox'){

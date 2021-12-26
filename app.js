@@ -2,113 +2,115 @@
 const todoForm = document.querySelector('.todo-form');
 const todoInput = document.querySelector('.todo-input');
 const todoItemsList = document.querySelector('.todo-items');
-// const addButton = document.querySelector('.add-btn');
-// let inputBox = document.querySelector('#input-box');
-// const todoItemsList = document.getElementById('todoList');
+
+const apiUrl = 'https://61c73e6d9031850017547388.mockapi.io/todos';
 
 var todos=[];
 
 
 // submit event
 todoForm.addEventListener('submit', function(event) {
+    window.console.log('event ',event)
     event.preventDefault();
     addTodo(todoInput.value); // call addTodo function for current value
+    renderTodos(event.target[0].value);
 });
 
-// var updateHeight = (element) => {
-// 	var scroll_height = element.scrollHeight;
-// 	element.style.height = scroll_height + 'px';
-// };
+getAllTodos().then(todos => {
+    todos.forEach(todo => { renderTodos(todo); });
+});
 
-// inputBox.addEventListener('input', function() {
-//     updateHeight(this);
-// })
+function getAllTodos() {
+    fetch(apiUrl)
+        .then((response) => response.json())
+        .then(function(todos){
+            todos.forEach((todo)=>{
+                console.log('todo: ',todo.title);
+            })
+        });
+}
 
-// createTodo function
-// function createTodo(item){
-//     const itemInput=document.createElement('textarea');
-//     itemInput.setAttribute('id', 'display-text');
-//     itemInput.classList.add('todo-input');
-//     itemInput.addEventListener('input',function() {
-//         updateHeight(this);
-//     })
-//     itemInput.value=item.title;
-//     itemInput.addEventListener('blur',(e)=>{
-//         item.title=e.currentTarget.value;
-//     })
-//     return itemInput;
-// }
+function addTodo(item){
+    let todos = {
+        id:Date.now(),
+        title:item,
+        completeStatus:false
+    }
+    fetch(apiUrl,{
+        method: "POST",
+        body: JSON.stringify(todos),
+        headers: {"Content-type": "application/json; charset=UTF-8"}
+    })
+    .then((response) => response.json())
+    .then((json) => console.log(json))
+    .catch((err) => console.log(err));
+    console.log('addtodo ',todos)
+    console.log('addtodoitem ',item)
+}
 
 // add Todo function
-function addTodo(item){
-    if(item!==''){
-        const todo={
-            id:Date.now(),
-            title:item,
-            completeStatus:false
-        }
-        todos.push(todo);
-        // renderTodos(todos);
-        addToLocalStorage(todos);
-        todoInput.value='';
-    }
-}
+// function addTodo(item){
+//     if(item!==''){
+//         const todo={
+//             id:Date.now(),
+//             title:item,
+//             completeStatus:false
+//         }
+//         todos.push(todo);
+//         addToLocalStorage(todos);
+//         todoInput.value='';
+//     }
+// }
 
 function renderTodos(todos){
     todoItemsList.innerHTML = '';
 
-    todos.forEach(function(item) {
-        const checked=item.completeStatus ? 'checked' : null;
-        const listItem=document.createElement('li');
-        listItem.setAttribute('class','item');
-        listItem.setAttribute('data-key', item.id);
-        // const itemInput = createTodo(item);
-		// const checkbox = addCheckbox(item);
-		// const deleteBtn = deleteTodo(item);
-		// listItem.append(checkbox);
-		// listItem.append(deleteBtn);
-		// listItem.append(itemInput);
-		// todoItemsList.append(listItem);
-		// updateHeight(itemInput);
-        if(item.completeStatus===true){
-            listItem.classList.add('checked');
-        }
-        listItem.innerHTML=`
-            <input type="checkbox" class="checkbox" ${checked}>
-            ${item.title}
-            <button class="delete-btn">Sil</button>
-        `
-        todoItemsList.append(listItem);
-    });
+    window.console.log('todos ',todos)
+
+    // const checked=item.completeStatus ? 'checked' : null;
+    // const listItem=document.createElement('li');
+    // listItem.setAttribute('class','item');
+    // listItem.setAttribute('data-key', item.id);
+    // if(item.completeStatus===true){
+    //     listItem.classList.add('checked');
+    // }
+    const listItem=document.createElement('li');
+    listItem.setAttribute('class','todos');
+    window.console.log('listItem ',listItem)
+    listItem.innerHTML=`
+    <span class="todo-input">${todos}</span>
+    `
+    todoItemsList.append(listItem);
+    // todos.forEach(function(item) {
+    //     window.console.log('item ',item)
+    //     const checked=item.completeStatus ? 'checked' : null;
+    //     const listItem=document.createElement('li');
+    //     listItem.setAttribute('class','item');
+    //     listItem.setAttribute('data-key', item.id);
+    //     if(item.completeStatus===true){
+    //         listItem.classList.add('checked');
+    //     }
+    //     listItem.innerHTML=`
+    //         <input type="checkbox" class="checkbox" ${checked}>
+    //         ${item.title}
+    //         <button class="delete-btn">Sil</button>
+    //     `
+    //     todoItemsList.append(listItem);
+    // });
 }
 
-// add checkbox
-// function addCheckbox(item){
-//     const checkbox=document.createElement('input');
-//     checkbox.type='checkbox';
-//     checkbox.name='checkbox';
-//     checkbox.classList.add('checkbox');
-//     checkbox.addEventListener('click',function(e){
-//         if(e.target.type==='checkbox'){
-//             item.completeStatus=e.currentTarget.checked;
-//             e.target.parentElement.classList.toggle('checked');
-//         }
-//     })
-//     return checkbox;
+// const addToLocalStorage = (todos) => {
+//     localStorage.setItem('todos', JSON.stringify(todos));
+//     renderTodos(todos);
 // }
 
-const addToLocalStorage = (todos) => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-    renderTodos(todos);
-}
-
-const getFromLocalStorage = () => {
-    const reference = localStorage.getItem('todos');
-    if (reference) {
-        todos = JSON.parse(reference);
-        renderTodos(todos);
-    }
-}
+// const getFromLocalStorage = () => {
+//     const reference = localStorage.getItem('todos');
+//     if (reference) {
+//         todos = JSON.parse(reference);
+//         renderTodos(todos);
+//     }
+// }
 
 // for completed status
 function toggle(id){
@@ -117,27 +119,18 @@ function toggle(id){
             item.completeStatus = !item.completeStatus;
         }
     })
-    addToLocalStorage(todos);
+    // addToLocalStorage(todos);
 }
 
 // delete Todo function
 function deleteTodo(id){
-    // const deleteBtn=document.createElement('button');
-    // deleteBtn.className='delete-btn';
-    // deleteBtn.innerText='Sil';
-    // deleteBtn.addEventListener('click',function(e) {
-    //     const div=this.parentElement;
-    //     div.style.display='none';
-    //     todos=todos.filter((todo)=>todo.id!==item.id);
-    // })
-    // return deleteBtn;
     todos=todos.filter(function(item) {
         return item.id != id;
     })
-    addToLocalStorage(todos);
+    // addToLocalStorage(todos);
 }
 
-getFromLocalStorage();
+// getFromLocalStorage();
 
 todoItemsList.addEventListener('click', function(event) {
     if(event.target.type==='checkbox'){

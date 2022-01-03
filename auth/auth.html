@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="auth.css">
+    <title>Auhthentication</title>
+</head>
+<body>
+    <div class="login">
+        <form class="loginForm" method="post" action="../index.html">
+            <h2>Register</h2>
+            <label for="name">Email</label>
+            <input type="email" id="name" placeholder="Username" required>
+
+            <label for="password">Password</label>
+            <input type="password"
+                id= "password"
+                placeholder="Password" required>
+            <input id="rgstr_btn" type="submit" value="Register" onclick="store()">
+        </form>
+    </div>
+    <div class="login">
+        <form class="loginForm">
+            <h2>Login</h2>
+            <label for="userName">Email</label>
+            <input type="email" id="userName" placeholder="Username" required>
+
+            <label for="password">Password</label>
+            <input type="password"
+                id= "password"
+                placeholder="Password" required>
+            <input id= "login_btn" type="submit" value="Login" onclick="check()">
+        </form>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>
